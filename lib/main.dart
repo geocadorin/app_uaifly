@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:uaifly_app/Pages/home_page.dart';
+import 'package:uaifly_app/Pages/register_page.dart';
 
 import 'Pages/auth_page.dart';
 
@@ -13,7 +15,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      home: LoginPage(),
+      title: 'UaiFly',
+      initialRoute: '/home',
+      debugShowCheckedModeBanner: false,
+      getPages: [
+        GetPage(name: '/login', page: () => LoginPage()),
+        GetPage(name: '/register', page: () => RegisterPage()),
+        GetPage(name: '/home', page: () => HomePage()),
+      ],
     );
   }
 }
