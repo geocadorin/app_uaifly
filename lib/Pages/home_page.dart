@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../Controllers/home_controller.dart';
-import '../models/destination.dart';
+import 'package:intl/intl.dart';
+import 'package:uaifly_app/Controllers/home_controller.dart';
+import 'package:uaifly_app/models/destination.dart';
 
 class HomePage extends StatelessWidget {
   final HomeController controller = Get.put(HomeController());
@@ -17,6 +17,7 @@ class HomePage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            buildTravelForm(context),
             buildSectionTitle('Promoção'),
             buildHorizontalList(controller.promotionDestinations),
             buildSectionTitle('Descubra o Brasil'),
@@ -27,6 +28,114 @@ class HomePage extends StatelessWidget {
             buildHorizontalList(controller.bestSellers),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget buildTravelForm(
+    BuildContext context,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Pesquisar Viagens',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
+          buildTextField('Origem', (value) => controller.origin.value = value),
+          buildTextField(
+              'Destino', (value) => controller.destination.value = value),
+          buildDatePicker(context, 'Data de Partida', controller.startDate),
+          buildDatePicker(context, 'Data de Retorno', controller.endDate),
+          buildTravelerCounter('Adultos', controller.adults),
+          buildTravelerCounter('Crianças', controller.children),
+          buildTravelerCounter('Bebês', controller.infants),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              // Lógica de pesquisa de viagens
+            },
+            child: const Text('Pesquisar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTextField(String label, Function(String) onChanged) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        decoration: InputDecoration(
+          labelText: label,
+          border: const OutlineInputBorder(),
+        ),
+        onChanged: onChanged,
+      ),
+    );
+  }
+
+  Widget buildDatePicker(
+      BuildContext context, String label, Rx<DateTime> date) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: GestureDetector(
+        onTap: () async {
+          DateTime? pickedDate = await showDatePicker(
+            context: context,
+            initialDate: date.value,
+            firstDate: DateTime(2000),
+            lastDate: DateTime(2101),
+          );
+          if (pickedDate != null && pickedDate != date.value) {
+            date.value = pickedDate;
+          }
+        },
+        child: Obx(() {
+          return Container(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              '$label: ${DateFormat('dd/MM/yyyy').format(date.value)}',
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget buildTravelerCounter(String label, RxInt count) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 16)),
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.remove),
+                onPressed: () {
+                  if (count.value > 0) count.value--;
+                },
+              ),
+              Obx(() {
+                return Text(count.value.toString(),
+                    style: const TextStyle(fontSize: 16));
+              }),
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  count.value++;
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -42,7 +151,7 @@ class HomePage extends StatelessWidget {
   }
 
   Widget buildHorizontalList(RxList<Destination> destinations) {
-    return SizedBox(
+    return Container(
       height: 200,
       child: Obx(() {
         return ListView.builder(

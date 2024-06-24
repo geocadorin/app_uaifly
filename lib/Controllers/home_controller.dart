@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../models/destination.dart';
 
@@ -7,6 +8,14 @@ class HomeController extends GetxController {
   var brazilDestinations = <Destination>[].obs;
   var worldDestinations = <Destination>[].obs;
   var bestSellers = <Destination>[].obs;
+
+  var origin = ''.obs;
+  var destination = ''.obs;
+  var startDate = DateTime.now().obs;
+  var endDate = DateTime.now().obs;
+  var adults = 1.obs;
+  var children = 0.obs;
+  var infants = 0.obs;
 
   @override
   void onInit() {
